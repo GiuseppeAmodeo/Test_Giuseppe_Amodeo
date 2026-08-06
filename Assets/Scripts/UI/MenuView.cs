@@ -10,6 +10,7 @@ namespace GemRush.UI
     {
         [SerializeField] private TMP_Text highScoreText;
         [SerializeField] private Button playButton;
+        [SerializeField] private Button quitButton;
 
         private void Start()
         {
@@ -18,6 +19,8 @@ namespace GemRush.UI
             highScoreText.text = best > 0 ? $"Best: {best}" : "No record yet";
 
             playButton.onClick.AddListener(() => SceneManager.LoadScene(SceneNames.Game));
+            quitButton.onClick.AddListener(Application.Quit);
+
         }
 
         private void OnDestroy() => playButton.onClick.RemoveAllListeners();
