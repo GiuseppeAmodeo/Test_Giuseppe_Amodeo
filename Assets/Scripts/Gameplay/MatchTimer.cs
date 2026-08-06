@@ -14,7 +14,10 @@ namespace GemRush.Gameplay
         public float TimeRemaining { get; private set; }
         public bool IsRunning { get; private set; }
 
-        private void Start()
+        private void OnEnable() => MatchCountdown.OnCountdownFinished += StartMatch;
+        private void OnDisable() => MatchCountdown.OnCountdownFinished -= StartMatch;
+
+        private void StartMatch()
         {
             TimeRemaining = config.matchDuration;
             IsRunning = true;

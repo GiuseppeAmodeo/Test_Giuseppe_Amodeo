@@ -24,7 +24,7 @@ namespace GemRush.UI
         {
             _defaultTimerColor = timerText.color;
             matchEndedText.gameObject.SetActive(false);
-            scoreText.text = "0";
+            scoreText.text = "Score: 0";
         }
 
         private void OnEnable()
@@ -43,14 +43,14 @@ namespace GemRush.UI
 
         private void HandleScoreChanged(int score)
         {
-            scoreText.text = score.ToString();
+            scoreText.text = "Score: " + score.ToString();
             if (_punch != null) StopCoroutine(_punch);
             _punch = StartCoroutine(PunchScale(scoreText.transform));
         }
 
         private void HandleTimeChanged(float timeRemaining)
         {
-            timerText.text = Mathf.CeilToInt(timeRemaining).ToString();
+            timerText.text = "Timer: " + Mathf.CeilToInt(timeRemaining).ToString();
             timerText.color = timeRemaining <= lowTimeThreshold ? lowTimeColor : _defaultTimerColor;
         }
 
