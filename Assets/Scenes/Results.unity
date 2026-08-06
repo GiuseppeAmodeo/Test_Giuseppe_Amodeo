@@ -465,6 +465,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: txt_NewRecord
       objectReference: {fileID: 0}
+    - target: {fileID: 3917865834454647138, guid: 10e1f5d683e93724d8025ca44b03c59b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7213971177963364617, guid: 10e1f5d683e93724d8025ca44b03c59b, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Pool;
 using GemRush.Core;
 
 namespace GemRush.Gameplay
@@ -12,19 +11,14 @@ namespace GemRush.Gameplay
         [SerializeField] private float spawnHeight = 0.75f;
         [SerializeField] private float edgePadding = 0.5f;
 
-        private ObjectPool<Gem> _pool;
+        private PrefabPool<Gem> _gemPool;
         private readonly List<Gem> _activeGems = new();
         private float _timer;
         private bool _spawningEnabled = true;
 
         private void Awake()
         {
-            _pool = new ObjectPool<Gem>(
-                createFunc: () => Instantiate(gemPrefab, transform),
-                actionOnGet: gem => gem.gameObject.SetActive(true),
-                actionOnRelease: gem => gem.gameObject.SetActive(false),
-                actionOnDestroy: gem => Destroy(gem.gameObject),
-                defaultCapacity: config.maxConcurrentGems);
+            _gemPool = new PrefabPool<Gem>(gemPrefab, transform, config.maxConcurrentGems);
         }
 
         private void OnEnable()
@@ -58,21 +52,23 @@ namespace GemRush.Gameplay
                 spawnHeight,
                 Random.Range(-extents.y, extents.y));
 
-            Gem gem = _pool.Get();
+            Gem gem = _gemPool.Get();
             gem.Initialize(position);
+            _activeGems.Add(gem);
         }
 
         private void HandleGemCollected(Gem gem)
         {
             _activeGems.Remove(gem);
-            _pool.Release(gem);
+            _gemPool.Release(gem);
         }
+    
 
         private void StopSpawning()
         {
             _spawningEnabled = false;
             foreach (Gem gem in _activeGems)
-                _pool.Release(gem);
+                _gemPool.Release(gem);
             _activeGems.Clear();
         }
     }
