@@ -2,6 +2,8 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using GemRush.Gameplay;
+using GemRush.Core.Events;
+using GemRush.Core;
 
 namespace GemRush.UI
 {
@@ -10,6 +12,11 @@ namespace GemRush.UI
         [SerializeField] private TMP_Text scoreText;
         [SerializeField] private TMP_Text timerText;
         [SerializeField] private TMP_Text matchEndedText;
+
+        [Header("Listens To")]
+        [SerializeField] private IntEventChannelSO scoreChangedChannel;
+        [SerializeField] private FloatEventChannelSO timeChangedChannel;
+        [SerializeField] private MatchStateEventChannelSO stateChannel;
 
         [Header("Feedback")]
         [SerializeField] private float lowTimeThreshold = 10f;
@@ -29,16 +36,21 @@ namespace GemRush.UI
 
         private void OnEnable()
         {
-            ScoreCounter.OnScoreChanged += HandleScoreChanged;
-            MatchTimer.OnTimeChanged += HandleTimeChanged;
-            MatchTimer.OnMatchEnded += HandleMatchEnded;
+            scoreChangedChannel.Subscribe(HandleScoreChanged);
+            timeChangedChannel.Subscribe(HandleTimeChanged);
+            stateChannel.Subscribe(HandleStateChanged);
         }
 
         private void OnDisable()
         {
-            ScoreCounter.OnScoreChanged -= HandleScoreChanged;
-            MatchTimer.OnTimeChanged -= HandleTimeChanged;
-            MatchTimer.OnMatchEnded -= HandleMatchEnded;
+            scoreChangedChannel.Unsubscribe(HandleScoreChanged);
+            timeChangedChannel.Unsubscribe(HandleTimeChanged);
+            stateChannel.Unsubscribe(HandleStateChanged);
+        }
+
+        private void HandleStateChanged(MatchState state)
+        {
+            matchEndedText.gameObject.SetActive(state == MatchState.Ended);
         }
 
         private void HandleScoreChanged(int score)
@@ -53,8 +65,6 @@ namespace GemRush.UI
             timerText.text = "Timer: " + Mathf.CeilToInt(timeRemaining).ToString();
             timerText.color = timeRemaining <= lowTimeThreshold ? lowTimeColor : _defaultTimerColor;
         }
-
-        private void HandleMatchEnded() => matchEndedText.gameObject.SetActive(true);
 
         private IEnumerator PunchScale(Transform target)
         {

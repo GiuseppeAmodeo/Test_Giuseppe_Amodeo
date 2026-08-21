@@ -1,11 +1,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 using GemRush.Core;
+using GemRush.Core.Events;
 
 namespace GemRush.Gameplay
 {
     public class GemSpawner : MonoBehaviour
     {
+        [Header("Listens To")]
+        [SerializeField] private MatchStateEventChannelSO stateChannel;
+        [SerializeField] private GemEventChannelSO gemCollectedChannel;
+
         [SerializeField] private GameConfig config;
         [SerializeField] private Gem gemPrefab;
         [SerializeField] private float spawnHeight = 0.75f;
@@ -14,7 +19,8 @@ namespace GemRush.Gameplay
         private PrefabPool<Gem> _gemPool;
         private readonly List<Gem> _activeGems = new();
         private float _timer;
-        private bool _spawningEnabled = true;
+
+        private MatchState state;
 
         private void Awake()
         {
@@ -23,19 +29,29 @@ namespace GemRush.Gameplay
 
         private void OnEnable()
         {
-            Gem.OnCollected += HandleGemCollected;
-            MatchTimer.OnMatchEnded += StopSpawning;
+            stateChannel.Subscribe(HandleStateChanged);
+            gemCollectedChannel.Subscribe(HandleGemCollected);
         }
 
         private void OnDisable()
         {
-            Gem.OnCollected -= HandleGemCollected;
-            MatchTimer.OnMatchEnded -= StopSpawning;
+            stateChannel.Unsubscribe(HandleStateChanged);
+            gemCollectedChannel.Unsubscribe(HandleGemCollected);
+        }
+
+        private void HandleStateChanged(MatchState state)
+        {
+            this.state = state;
+
+            if (state == MatchState.Ended)
+                StopSpawning();
         }
 
         private void Update()
         {
-            if (!_spawningEnabled || _activeGems.Count >= config.maxConcurrentGems) return;
+            if(this.state != MatchState.Playing) return;
+
+            if (_activeGems.Count >= config.maxConcurrentGems) return;
 
             _timer += Time.deltaTime;
             if (_timer < config.spawnInterval) return;
@@ -62,11 +78,10 @@ namespace GemRush.Gameplay
             _activeGems.Remove(gem);
             _gemPool.Release(gem);
         }
-    
+
 
         private void StopSpawning()
         {
-            _spawningEnabled = false;
             foreach (Gem gem in _activeGems)
                 _gemPool.Release(gem);
             _activeGems.Clear();

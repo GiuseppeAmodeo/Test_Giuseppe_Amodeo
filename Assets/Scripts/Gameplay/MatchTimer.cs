@@ -1,26 +1,41 @@
 using System;
 using UnityEngine;
 using GemRush.Core;
+using GemRush.Core.Events;
 
 namespace GemRush.Gameplay
 {
     public class MatchTimer : MonoBehaviour
     {
-        public static event Action<float> OnTimeChanged;
-        public static event Action OnMatchEnded;
-
         [SerializeField] private GameConfig config;
 
+        [Header("Listens To")]
+        [SerializeField] private MatchStateEventChannelSO stateChannel;
+
+        [Header("Broadcasts To")]
+        [SerializeField] private FloatEventChannelSO timeChangedChannel;
+        [SerializeField] private VoidEventChannelSO timeExpiredChannel;
+
         public float TimeRemaining { get; private set; }
-        public bool IsRunning { get; private set; }
 
-        private void OnEnable() => MatchCountdown.OnCountdownFinished += StartMatch;
-        private void OnDisable() => MatchCountdown.OnCountdownFinished -= StartMatch;
+        public bool IsRunning;
 
-        private void StartMatch()
+        private void OnEnable() => stateChannel.Subscribe(HandleStateChanged);
+        private void OnDisable() => stateChannel.Unsubscribe(HandleStateChanged);
+
+        private void HandleStateChanged(MatchState state)
         {
-            TimeRemaining = config.matchDuration;
-            IsRunning = true;
+            Debug.Log($"[Timer] stato: {state}, durata config: {config.matchDuration}");
+
+            if (state == MatchState.Playing)
+            {
+                TimeRemaining = config.matchDuration;
+                IsRunning = true;
+            }
+            else
+            {
+                IsRunning = false;
+            }
         }
 
         private void Update()
@@ -28,12 +43,12 @@ namespace GemRush.Gameplay
             if (!IsRunning) return;
 
             TimeRemaining = Mathf.Max(0f, TimeRemaining - Time.deltaTime);
-            OnTimeChanged?.Invoke(TimeRemaining);
+            timeChangedChannel.Raise(TimeRemaining);
 
             if (TimeRemaining <= 0f)
             {
                 IsRunning = false;
-                OnMatchEnded?.Invoke();
+                timeExpiredChannel.Raise();
             }
         }
     }

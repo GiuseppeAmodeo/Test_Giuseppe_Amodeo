@@ -2,21 +2,41 @@ using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using GemRush.Core;
+using GemRush.Core.Events;
 
 namespace GemRush.Gameplay
 {
     public class MatchCountdown : MonoBehaviour
     {
-        public static event Action OnCountdownFinished;
-
         [SerializeField] private TMP_Text countdownText;
         [SerializeField] private float stepDuration = 0.8f;
 
-        private void Start() => StartCoroutine(RunCountdown());
+        [Header("Listens To")]
+        [SerializeField] private MatchStateEventChannelSO stateChannel;
+
+        [Header("Broadcasts To")]
+        [SerializeField] private VoidEventChannelSO countdownFinishChannel;
+
+        private void OnEnable()
+        {
+            stateChannel.Subscribe(HandleStateChanged);
+        }
+
+
+        private void OnDisable()
+        {
+            stateChannel.Unsubscribe(HandleStateChanged);
+        }
+
+        private void HandleStateChanged(MatchState state)
+        {
+            if (state == MatchState.Countdown)
+                StartCoroutine(RunCountdown());
+        }
 
         private IEnumerator RunCountdown()
         {
-            Time.timeScale = 0f; // freeze gameplay, coroutine uses realtime
             countdownText.gameObject.SetActive(true);
 
             for (int i = 3; i > 0; i--)
@@ -29,8 +49,10 @@ namespace GemRush.Gameplay
             yield return AnimateStep();
 
             countdownText.gameObject.SetActive(false);
-            Time.timeScale = 1f;
-            OnCountdownFinished?.Invoke();
+
+            Debug.Log("[Countdown] alzo countdownFinished");
+
+            countdownFinishChannel.Raise();
         }
 
         private IEnumerator AnimateStep()

@@ -1,4 +1,5 @@
 ﻿<Solution>
-  <Project Path="Assembly-CSharp.csproj" />
-  <Project Path="Assembly-CSharp-Editor.csproj" />
+  <Project Path="GemRush.Core.csproj" />
+  <Project Path="GemRush.Gameplay.csproj" />
+  <Project Path="GemRush.UI.csproj" />
 </Solution>

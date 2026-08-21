@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using GemRush.Core;
+using GemRush.Core.Events;
 
 namespace GemRush.Gameplay
 {
@@ -14,13 +15,18 @@ namespace GemRush.Gameplay
         [SerializeField] private ScoreCounter scoreCounter;
         [SerializeField] private float resultsDelay = 1.5f;
 
+        [Header("Listens To")]
+        [SerializeField] private MatchStateEventChannelSO stateChannel;
+
         private readonly IHighScoreRepository _highScores = new PlayerPrefsHighScoreRepository();
 
-        private void OnEnable() => MatchTimer.OnMatchEnded += HandleMatchEnded;
-        private void OnDisable() => MatchTimer.OnMatchEnded -= HandleMatchEnded;
+        private void OnEnable() => stateChannel.Subscribe(HandleStateChanged);
+        private void OnDisable() => stateChannel.Unsubscribe(HandleStateChanged);
 
-        private void HandleMatchEnded()
+        private void HandleStateChanged(MatchState state)
         {
+            if (state != MatchState.Ended) return;
+
             int score = scoreCounter.CurrentScore;
             bool isNewRecord = score > _highScores.Load();
 
