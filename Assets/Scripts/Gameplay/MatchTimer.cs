@@ -18,7 +18,7 @@ namespace GemRush.Gameplay
 
         public float TimeRemaining { get; private set; }
 
-        public bool IsRunning;
+        public bool IsRunning { get; private set; }
 
         private void OnEnable() => stateChannel.Subscribe(HandleStateChanged);
         private void OnDisable() => stateChannel.Unsubscribe(HandleStateChanged);
