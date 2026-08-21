@@ -51,9 +51,6 @@ namespace GemRush.Core
         {
             if (State == next) return;
 
-            Debug.Log($"[FSM] {State} -> {next}");
-
-
             State = next;
             stateChannel.Raise(next);
         }

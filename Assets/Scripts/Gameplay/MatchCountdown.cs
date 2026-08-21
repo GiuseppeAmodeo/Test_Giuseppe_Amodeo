@@ -50,8 +50,6 @@ namespace GemRush.Gameplay
 
             countdownText.gameObject.SetActive(false);
 
-            Debug.Log("[Countdown] alzo countdownFinished");
-
             countdownFinishChannel.Raise();
         }
 

@@ -25,8 +25,6 @@ namespace GemRush.Gameplay
 
         private void HandleStateChanged(MatchState state)
         {
-            Debug.Log($"[Timer] stato: {state}, durata config: {config.matchDuration}");
-
             if (state == MatchState.Playing)
             {
                 TimeRemaining = config.matchDuration;
