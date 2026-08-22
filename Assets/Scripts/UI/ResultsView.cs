@@ -12,10 +12,12 @@ namespace GemRush.UI
         [SerializeField] private TMP_Text newRecordText;
         [SerializeField] private Button menuButton;
 
+        [SerializeField] private MatchResultSO matchResult;
+
         private void Start()
         {
-            scoreText.text = $"Score: {GameSession.LastScore}";
-            newRecordText.gameObject.SetActive(GameSession.IsNewRecord);
+            scoreText.text = $"Score: {matchResult.LastScore}";
+            newRecordText.gameObject.SetActive(matchResult.IsNewRecord);
 
             menuButton.onClick.AddListener(() => SceneManager.LoadScene(SceneNames.Menu));
         }

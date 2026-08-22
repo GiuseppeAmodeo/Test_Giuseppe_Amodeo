@@ -316,6 +316,7 @@ MonoBehaviour:
   scoreText: {fileID: 1112117821}
   newRecordText: {fileID: 909656029}
   menuButton: {fileID: 2009714389}
+  matchResult: {fileID: 11400000, guid: d2629c62f45df4b46ad2a2b64811f231, type: 2}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0

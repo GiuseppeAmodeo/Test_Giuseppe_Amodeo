@@ -710,7 +710,6 @@ MonoBehaviour:
   stateChannel: {fileID: 11400000, guid: 5565fe1bb929b404599d9d3e3c11f872, type: 2}
   timeChangedChannel: {fileID: 11400000, guid: 34db48a0526164641acc83fc2365581d, type: 2}
   timeExpiredChannel: {fileID: 11400000, guid: 9ad0d05c5feea6d4e9a033998f3461e0, type: 2}
-  IsRunning: 0
 --- !u!114 &895387732
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -759,6 +758,7 @@ MonoBehaviour:
   scoreCounter: {fileID: 895387730}
   resultsDelay: 1.5
   stateChannel: {fileID: 11400000, guid: 5565fe1bb929b404599d9d3e3c11f872, type: 2}
+  matchResult: {fileID: 11400000, guid: d2629c62f45df4b46ad2a2b64811f231, type: 2}
 --- !u!114 &895387735
 MonoBehaviour:
   m_ObjectHideFlags: 0

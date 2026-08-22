@@ -18,6 +18,8 @@ namespace GemRush.Gameplay
         [Header("Listens To")]
         [SerializeField] private MatchStateEventChannelSO stateChannel;
 
+        [SerializeField] private MatchResultSO matchResult;
+
         private readonly IHighScoreRepository _highScores = new PlayerPrefsHighScoreRepository();
 
         private void OnEnable() => stateChannel.Subscribe(HandleStateChanged);
@@ -33,7 +35,8 @@ namespace GemRush.Gameplay
             if (isNewRecord)
                 _highScores.Save(score);
 
-            GameSession.RegisterMatchResult(score, isNewRecord);
+            //GameSession.RegisterMatchResult(score, isNewRecord);
+            matchResult.Register(score, isNewRecord);
             StartCoroutine(LoadResultsAfterDelay());
         }
 
